@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using APICatalogo.Validations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace APICatalogo.Models;
 
@@ -11,6 +13,7 @@ public class Produto
 
     [Required]
     [StringLength(80)]
+    [PrimeiraLetraMaiuscula]
     public string? Nome { get; set; }
 
     [Required]
@@ -27,5 +30,7 @@ public class Produto
     public float Estoque { get; set; }
     public DateTime DataCadastro { get; set; }
     public int CategoriaId { get; set; }
+
+    [JsonIgnore]
     public Categoria Categoria { get; set; }
 }
