@@ -2,6 +2,7 @@
 using APICatalogo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using APICatalogo.Filters;
 
 namespace APICatalogo.Controllers
 {
@@ -19,6 +20,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<Produto>>> Get()
         {
             var produtos = await _context.Produtos.AsNoTracking().ToListAsync();
@@ -31,6 +33,8 @@ namespace APICatalogo.Controllers
         [HttpGet("{id:int:min(1)}", Name= "ObterProduto")]
         public async Task<ActionResult<Produto>> Get(int id)
         {
+            throw new Exception("Exception ao retornar produto pelo id");
+            
             var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             if (produto == null) return NotFound();
