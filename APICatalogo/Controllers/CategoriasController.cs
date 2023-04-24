@@ -1,8 +1,6 @@
-﻿using APICatalogo.Context;
-using APICatalogo.Models;
-using Microsoft.AspNetCore.Http;
+﻿using APICatalogo.Models;
+using APICatalogo.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers
 {
@@ -10,19 +8,19 @@ namespace APICatalogo.Controllers
     [ApiController]
     public class CategoriasController : ControllerBase
     {
-        private readonly APIContext _context;
+        private readonly IUnityOfWork _uow;
 
-        public CategoriasController(APIContext context)
+        public CategoriasController(IUnityOfWork context)
         {
-            _context = context;
+            _uow = context;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get ()
+        public ActionResult<IEnumerable<Categoria>> Get()
         {
             try
             {
-                return _context.Categorias.AsNoTracking().ToList();
+                return _uow.CategoriaRepository.Get().ToList();
             }
             catch (Exception)
             {
@@ -34,13 +32,13 @@ namespace APICatalogo.Controllers
         [HttpGet("Produtos")]
         public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
         {
-            return _context.Categorias.AsNoTracking().Include(p => p.Produtos).ToList();
+            return _uow.CategoriaRepository.GetCategoriasProdutos().ToList();
         }
 
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
-            var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.Id == id);
+            var categoria = _uow.CategoriaRepository.GetById(c => c.Id == id);
 
             if (categoria is null) return NotFound();
 
@@ -52,8 +50,8 @@ namespace APICatalogo.Controllers
         {
             if (categoria is null) return BadRequest();
 
-            _context.Categorias.Add(categoria);
-            _context.SaveChanges();
+            _uow.CategoriaRepository.Add(categoria);
+            _uow.Commit();
 
             return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.Id }, categoria);
         }
@@ -66,8 +64,8 @@ namespace APICatalogo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
-            _context.SaveChanges();
+            _uow.CategoriaRepository.Update(categoria);
+            _uow.Commit();
 
             return Ok(categoria);
         }
@@ -77,15 +75,15 @@ namespace APICatalogo.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var categoria = _context.Categorias.FirstOrDefault(x => x.Id == id);
+            var categoria = _uow.CategoriaRepository.GetById(c => c.Id == id);
 
             if (categoria is null)
             {
                 return NotFound("categoria não localizado");
             }
 
-            _context.Categorias.Remove(categoria);
-            _context.SaveChanges();
+            _uow.CategoriaRepository.Delete(categoria);
+            _uow.Commit();
 
             return Ok(categoria);
         }
