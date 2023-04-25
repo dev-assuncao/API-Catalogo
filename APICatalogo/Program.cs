@@ -1,7 +1,9 @@
 using APICatalogo.Context;
+using APICatalogo.DTOs.Mappings;
 using APICatalogo.Extensions;
 using APICatalogo.Filters;
 using APICatalogo.Repository;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -14,14 +16,29 @@ options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
+
+
 var connection = builder.Configuration.GetConnectionString("CatalogoDB");
+
+builder.Services.AddDbContext<APIContext>(options =>
+options.UseSqlServer(connection));
+
 builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepositoy>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IUnityOfWork, UnityOfWork>();
 
-builder.Services.AddDbContext<APIContext>(options =>
-options.UseSqlServer(connection));
+var mappingConfig = new MapperConfiguration(
+    mc =>
+    {
+        mc.AddProfile(new MappingProfile());
+    });
+
+IMapper mapper = mappingConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 
 var app = builder.Build();
