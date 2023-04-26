@@ -17,10 +17,6 @@ options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
-
-
 var connection = builder.Configuration.GetConnectionString("CatalogoDB");
 
 builder.Services.AddDbContext<APIContext>(options =>
