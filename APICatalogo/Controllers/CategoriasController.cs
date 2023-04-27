@@ -22,11 +22,11 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriaParameters categoriaParameters)
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get([FromQuery] CategoriaParameters categoriaParameters)
         {
             try
             {
-                var categoria = _uow.CategoriaRepository.GetCategorias(categoriaParameters);
+                var categoria = await _uow.CategoriaRepository.GetCategorias(categoriaParameters);
 
 
                 var metada = new
@@ -53,18 +53,18 @@ namespace APICatalogo.Controllers
 
 
         [HttpGet("Produtos")]
-        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasProdutos()
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasProdutos()
         {
 
-            var categoriaDTO = _mapper.Map<List<CategoriaDTO>>(_uow.CategoriaRepository.GetCategoriasProdutos().ToList());
+            var categoriaDTO = _mapper.Map<List<CategoriaDTO>>( await _uow.CategoriaRepository.GetCategoriasProdutos());
 
             return categoriaDTO;
         }
 
         [HttpGet("{id:int}", Name = "ObterCategoria")]
-        public ActionResult<CategoriaDTO> Get(int id)
+        public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
-            var categoriaDTO = _mapper.Map<CategoriaDTO>(_uow.CategoriaRepository.GetById(c => c.Id == id));
+            var categoriaDTO = _mapper.Map<CategoriaDTO>(await _uow.CategoriaRepository.GetById(c => c.Id == id));
 
             if (categoriaDTO is null) return NotFound();
 
@@ -72,21 +72,21 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPost]
-        public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDto)
+        public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
         {
             if (categoriaDto is null) return BadRequest();
 
             var categoria = _mapper.Map<Categoria>(categoriaDto);
 
             _uow.CategoriaRepository.Add(categoria);
-            _uow.Commit();
+            await _uow.Commit();
 
             var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
             return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.Id }, categoriaDTO);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDTO)
+        public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDTO)
         {
             if (categoriaDTO.Id != id)
             {
@@ -96,7 +96,7 @@ namespace APICatalogo.Controllers
             var categoria = _mapper.Map<Categoria>(categoriaDTO);
 
             _uow.CategoriaRepository.Update(categoria);
-            _uow.Commit();
+            await _uow.Commit();
 
             var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
 
@@ -106,9 +106,9 @@ namespace APICatalogo.Controllers
 
 
         [HttpDelete("{id:int}")]
-        public ActionResult<CategoriaDTO> Delete(int id)
+        public async Task<ActionResult<CategoriaDTO>> Delete(int id)
         {
-            var categoria = _uow.CategoriaRepository.GetById(c => c.Id == id);
+            var categoria = await _uow.CategoriaRepository.GetById(c => c.Id == id);
 
             if (categoria is null)
             {
@@ -116,7 +116,7 @@ namespace APICatalogo.Controllers
             }
 
             _uow.CategoriaRepository.Delete(categoria);
-            _uow.Commit();
+            await _uow.Commit();
 
             var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
 
