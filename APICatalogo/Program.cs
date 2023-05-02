@@ -4,6 +4,7 @@ using APICatalogo.Extensions;
 using APICatalogo.Filters;
 using APICatalogo.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -21,6 +22,10 @@ var connection = builder.Configuration.GetConnectionString("CatalogoDB");
 
 builder.Services.AddDbContext<APIContext>(options =>
 options.UseSqlServer(connection));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<APIContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepositoy>();
@@ -48,6 +53,7 @@ if (app.Environment.IsDevelopment())
 app.ConfigureExceptionHandler();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
