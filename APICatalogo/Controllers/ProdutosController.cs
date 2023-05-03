@@ -7,6 +7,7 @@ using AutoMapper;
 using APICatalogo.DTOs;
 using APICatalogo.Pagination;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APICatalogo.Controllers
 {
@@ -14,6 +15,7 @@ namespace APICatalogo.Controllers
 
     [Route("[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class ProdutosController : ControllerBase
     {
         private readonly IUnityOfWork _uof;
