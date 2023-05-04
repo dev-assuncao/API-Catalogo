@@ -14,6 +14,8 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors();
+
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(options =>
 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -45,7 +47,7 @@ builder.Services.AddSwaggerGen(options =>
             }
          },
          new string[]{ }
-        } 
+        }
     });
 });
 
@@ -101,11 +103,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else if (app.Environment.IsStaging())
+{
+    app.UseExceptionHandler("/Error");
+}
 app.ConfigureExceptionHandler();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors(opt => opt.WithOrigins("http://apirequest.io/").WithMethods("GET"));
 
 app.MapControllers();
 

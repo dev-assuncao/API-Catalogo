@@ -113,7 +113,7 @@ namespace APICatalogo.Controllers
                 signingCredentials: credenciais);
 
 
-            return new UsuarioToken()
+             return new UsuarioToken()
             {
                 Authenticated = true,
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
