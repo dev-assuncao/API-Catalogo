@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing.Matching;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +27,24 @@ options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "APICatalogo", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "APICatalogo",
+        Description = "Catálogo de Produtos e Categorias",
+        TermsOfService = new Uri("https://google.com.br/"),
+        Contact = new OpenApiContact
+        {
+            Name = "Davisson Assuncao",
+            Email = "davisson.assuncao@gmail.com",
+            Url = new Uri("https://google.com.br"),
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Usar sobre LICX",
+            Url = new Uri("https://google.com.br"),
+        }
+    }); 
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
@@ -79,6 +99,15 @@ builder.Services.AddAuthentication(
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:key"]))
         });
 
+
+
+builder.Services.AddApiVersioning(opt =>
+{
+    opt.AssumeDefaultVersionWhenUnspecified = true;
+    opt.DefaultApiVersion = new ApiVersion(1,0);
+    opt.ReportApiVersions = true;
+    opt.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
+});
 
 builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepositoy>();
