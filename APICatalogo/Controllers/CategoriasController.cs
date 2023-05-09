@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace APICatalogo.Controllers
 {
-    
+    [Produces("application/json")]
     [Route("[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
@@ -64,6 +64,9 @@ namespace APICatalogo.Controllers
             return categoriaDTO;
         }
 
+
+        [ProducesResponseType(typeof(ProdutoDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
@@ -74,7 +77,25 @@ namespace APICatalogo.Controllers
             return Ok(categoriaDTO);
         }
 
+        /// <summary>
+        /// Inclui uma nova categoria
+        /// </summary>
+        /// <remarks>
+        ///     Exemplo de request:
+        ///         
+        ///         Post api/categorias
+        ///         {
+        ///            "categoriaId":1,
+        ///            "nome": "categoria'",
+        ///            "imagemUrl": "http://teste.net/1.jpg"
+        ///         }
+        /// </remarks>
+        /// <param name="categoriaDto"> objeto Categoria </param>
+        /// <returns> O objeto Categoria incluida </returns>
+        /// <remarks> Retorna um objeto Categoria incluído</remarks>
         [HttpPost]
+        [ProducesResponseType(typeof(ProdutoDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
         {
             if (categoriaDto is null) return BadRequest();
@@ -89,6 +110,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
         public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDTO)
         {
             if (categoriaDTO.Id != id)

@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +45,11 @@ builder.Services.AddSwaggerGen(options =>
             Name = "Usar sobre LICX",
             Url = new Uri("https://google.com.br"),
         }
-    }); 
+    });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
@@ -104,7 +109,7 @@ builder.Services.AddAuthentication(
 builder.Services.AddApiVersioning(opt =>
 {
     opt.AssumeDefaultVersionWhenUnspecified = true;
-    opt.DefaultApiVersion = new ApiVersion(1,0);
+    opt.DefaultApiVersion = new ApiVersion(1, 0);
     opt.ReportApiVersions = true;
     opt.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
 });

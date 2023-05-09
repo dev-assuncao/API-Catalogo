@@ -12,10 +12,11 @@ using Microsoft.AspNetCore.Authorization;
 namespace APICatalogo.Controllers
 {
 
-
+    [Produces("application/json")]
     [Route("[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class ProdutosController : ControllerBase
     {
         private readonly IUnityOfWork _uof;
